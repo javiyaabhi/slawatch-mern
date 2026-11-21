@@ -9,8 +9,11 @@ if (!process.env.CLIENT_ORIGIN && process.env.RENDER_EXTERNAL_URL) {
   process.env.CLIENT_ORIGIN = process.env.RENDER_EXTERNAL_URL;
 }
 if (process.env.CLIENT_ORIGIN) process.env.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN.trim().replace(/\/+$/, '');
-if (!process.env.CLIENT_ORIGIN) throw new Error('CLIENT_ORIGIN is required');
-if (process.env.NODE_ENV === 'production' && !process.env.CLIENT_ORIGIN.startsWith('https://')) throw new Error('Production CLIENT_ORIGIN must use HTTPS');
+if (!process.env.CLIENT_ORIGIN) process.env.CLIENT_ORIGIN = 'http://localhost:5173';
+const origins = process.env.CLIENT_ORIGIN.split(',').map(s => s.trim().replace(/\/+$/, ''));
+if (process.env.NODE_ENV === 'production' && !origins.some(o => o.startsWith('https://') || o.includes('localhost') || o.includes('127.0.0.1'))) {
+  throw new Error('Production CLIENT_ORIGIN must use HTTPS');
+}
 try {
   await connectDB();
   // Ensure the unique session identifier and TTL cleanup indexes exist before serving requests.

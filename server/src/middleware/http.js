@@ -58,11 +58,46 @@ export function clearSession(res) {
 export function csrfForSession(sessionId) {
   return crypto.createHmac('sha256', process.env.JWT_SECRET).update(`csrf:${sessionId}`).digest('hex');
 }
+export function isOriginAllowed(req, origin) {
+  if (!origin) return true;
+  const cleanOrigin = origin.trim().replace(/\/+$/, '');
+  const envOrigins = (process.env.CLIENT_ORIGIN || '')
+    .split(',')
+    .map(o => o.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+  if (envOrigins.includes(cleanOrigin)) return true;
+
+  if (process.env.RENDER_EXTERNAL_URL) {
+    const renderOrigin = process.env.RENDER_EXTERNAL_URL.trim().replace(/\/+$/, '');
+    if (cleanOrigin === renderOrigin) return true;
+  }
+
+  const host = req.get('host');
+  if (host) {
+    if (cleanOrigin === `https://${host}` || cleanOrigin === `http://${host}`) {
+      return true;
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const devOrigins = [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:5000',
+      'http://127.0.0.1:5000',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ];
+    if (devOrigins.includes(cleanOrigin)) return true;
+  }
+
+  return false;
+}
+
 export function protectMutations(req, _res, next) {
   if (req.get('sec-fetch-site') === 'cross-site') return next(new HttpError(403, 'Cross-site requests are not allowed'));
   const origin = req.get('origin');
-  const allowed = (process.env.CLIENT_ORIGIN || '').trim().replace(/\/+$/, '');
-  if (origin && origin !== allowed) return next(new HttpError(403, 'Untrusted origin'));
+  if (origin && !isOriginAllowed(req, origin)) return next(new HttpError(403, 'Untrusted origin'));
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
   // Login is unauthenticated; its origin is still verified above.
   if (req.originalUrl.split('?')[0] === '/api/auth/login') return next();

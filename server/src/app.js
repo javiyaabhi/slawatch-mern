@@ -23,7 +23,30 @@ if (process.env.CLIENT_ORIGIN) {
 }
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.trim().replace(/\/+$/, '');
+    const envOrigins = (process.env.CLIENT_ORIGIN || '')
+      .split(',')
+      .map(o => o.trim().replace(/\/+$/, ''))
+      .filter(Boolean);
+    const renderOrigin = (process.env.RENDER_EXTERNAL_URL || '').trim().replace(/\/+$/, '');
+    const devOrigins = [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:5000',
+      'http://127.0.0.1:5000'
+    ];
+    if (
+      envOrigins.includes(cleanOrigin) ||
+      (renderOrigin && cleanOrigin === renderOrigin) ||
+      (process.env.NODE_ENV !== 'production' && devOrigins.includes(cleanOrigin)) ||
+      process.env.NODE_ENV === 'production'
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS not allowed for this origin'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'X-CSRF-Token']
