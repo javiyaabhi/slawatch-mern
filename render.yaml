@@ -3,8 +3,8 @@ services:
     name: slawatch
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run seed:manager && npm run seed:demo && npm start
     healthCheckPath: /health/ready
     envVars:
       - key: NODE_ENV
