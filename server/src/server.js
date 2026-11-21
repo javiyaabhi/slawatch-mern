@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 import UserSession from './models/UserSession.js';
 
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32 || process.env.JWT_SECRET.includes('REPLACE')) throw new Error('JWT_SECRET must have at least 32 characters');
+if (!process.env.CLIENT_ORIGIN && process.env.RENDER_EXTERNAL_URL) {
+  process.env.CLIENT_ORIGIN = process.env.RENDER_EXTERNAL_URL;
+}
 if (process.env.CLIENT_ORIGIN) process.env.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN.trim().replace(/\/+$/, '');
 if (!process.env.CLIENT_ORIGIN) throw new Error('CLIENT_ORIGIN is required');
 if (process.env.NODE_ENV === 'production' && !process.env.CLIENT_ORIGIN.startsWith('https://')) throw new Error('Production CLIENT_ORIGIN must use HTTPS');

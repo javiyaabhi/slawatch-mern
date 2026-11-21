@@ -15,6 +15,9 @@ app.disable('x-powered-by');
 app.use(requestContext);
 app.use(helmet());
 
+if (!process.env.CLIENT_ORIGIN && process.env.RENDER_EXTERNAL_URL) {
+  process.env.CLIENT_ORIGIN = process.env.RENDER_EXTERNAL_URL;
+}
 if (process.env.CLIENT_ORIGIN) {
   process.env.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN.trim().replace(/\/+$/, '');
 }
