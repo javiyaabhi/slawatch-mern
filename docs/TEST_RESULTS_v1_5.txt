@@ -1,0 +1,16 @@
+SLAWatch v1.5 — local verification evidence
+
+Validated: 2026-11-09
+
+PASS: 53/53 Node unit tests (server/tests/*.test.js), including session lifetime, exact expiry, revocation and malformed session records.
+PASS: all server/src/**/*.js files passed `node --check`.
+PASS: scripts/smoke-api.mjs passed `node --check`; it contains 18 live checkpoints including logout/replay rejection.
+PASS: `UserSession.createIndexes()` is called after MongoDB connection and before the HTTP listener starts.
+PASS: source archive contains no .env files or node_modules.
+
+NOT VERIFIED:
+- `npm install --no-audit --no-fund --ignore-scripts` timed out in this environment; no package-lock was generated and no Vite production build was completed (`vite: not found`).
+- No MongoDB replica-set connection was available; the UserSession collection, indexes, login/logout integration and live API smoke journey have not been exercised against a live database.
+- Browser rendering, accessibility, responsive layout, dependency audit, load test, backup/restore and penetration testing remain outstanding.
+
+Interpretation: local unit and syntax checks pass. This is not a production-readiness certification.

@@ -1,0 +1,210 @@
+
+> slawatch-mern@1.1.0 test
+> npm run test -w server
+
+
+> slawatch-api@1.1.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: SLA defaults cover every priority
+ok 1 - SLA defaults cover every priority
+  ---
+  duration_ms: 1.658225
+  type: 'test'
+  ...
+# Subtest: deadline is calculated in elapsed hours
+ok 2 - deadline is calculated in elapsed hours
+  ---
+  duration_ms: 0.38394
+  type: 'test'
+  ...
+# Subtest: deadline rejects invalid target
+ok 3 - deadline rejects invalid target
+  ---
+  duration_ms: 0.232952
+  type: 'test'
+  ...
+# Subtest: open ticket below 80% is on track
+ok 4 - open ticket below 80% is on track
+  ---
+  duration_ms: 0.186411
+  type: 'test'
+  ...
+# Subtest: open ticket at 80% is at risk
+ok 5 - open ticket at 80% is at risk
+  ---
+  duration_ms: 0.102105
+  type: 'test'
+  ...
+# Subtest: open ticket past deadline breached
+ok 6 - open ticket past deadline breached
+  ---
+  duration_ms: 0.083065
+  type: 'test'
+  ...
+# Subtest: resolved before deadline met
+ok 7 - resolved before deadline met
+  ---
+  duration_ms: 0.179121
+  type: 'test'
+  ...
+# Subtest: resolved after deadline breached
+ok 8 - resolved after deadline breached
+  ---
+  duration_ms: 0.221704
+  type: 'test'
+  ...
+# Subtest: resolved status cannot reopen
+ok 9 - resolved status cannot reopen
+  ---
+  duration_ms: 0.500656
+  type: 'test'
+  ...
+# Subtest: open can resolve directly
+ok 10 - open can resolve directly
+  ---
+  duration_ms: 0.299312
+  type: 'test'
+  ...
+# Subtest: in progress cannot reopen
+ok 11 - in progress cannot reopen
+  ---
+  duration_ms: 0.135945
+  type: 'test'
+  ...
+# Subtest: resolution hours calculate correctly
+ok 12 - resolution hours calculate correctly
+  ---
+  duration_ms: 0.126952
+  type: 'test'
+  ...
+# Subtest: safe percentage with no denominator
+ok 13 - safe percentage with no denominator
+  ---
+  duration_ms: 0.071458
+  type: 'test'
+  ...
+# Subtest: summary separates resolved and active breaches
+ok 14 - summary separates resolved and active breaches
+  ---
+  duration_ms: 0.153292
+  type: 'test'
+  ...
+# Subtest: assigned agent can read own ticket
+ok 15 - assigned agent can read own ticket
+  ---
+  duration_ms: 0.779037
+  type: 'test'
+  ...
+# Subtest: other agent cannot read ticket
+ok 16 - other agent cannot read ticket
+  ---
+  duration_ms: 0.15193
+  type: 'test'
+  ...
+# Subtest: manager can read active ticket
+ok 17 - manager can read active ticket
+  ---
+  duration_ms: 0.082314
+  type: 'test'
+  ...
+# Subtest: archived tickets hidden in standard view
+ok 18 - archived tickets hidden in standard view
+  ---
+  duration_ms: 0.121584
+  type: 'test'
+  ...
+# Subtest: manager can inspect archived ticket read-only
+ok 19 - manager can inspect archived ticket read-only
+  ---
+  duration_ms: 0.093351
+  type: 'test'
+  ...
+# Subtest: agents can never inspect archived ticket
+ok 20 - agents can never inspect archived ticket
+  ---
+  duration_ms: 0.098058
+  type: 'test'
+  ...
+# Subtest: manager can open archive register
+ok 21 - manager can open archive register
+  ---
+  duration_ms: 0.079861
+  type: 'test'
+  ...
+# Subtest: agents cannot access archive register
+ok 22 - agents cannot access archive register
+  ---
+  duration_ms: 0.064307
+  type: 'test'
+  ...
+# Subtest: manager archive scope excludes all active tickets
+ok 23 - manager archive scope excludes all active tickets
+  ---
+  duration_ms: 0.845537
+  type: 'test'
+  ...
+# Subtest: default manager scope contains only current records
+ok 24 - default manager scope contains only current records
+  ---
+  duration_ms: 0.294194
+  type: 'test'
+  ...
+# Subtest: agent scope restricts to own current tickets
+ok 25 - agent scope restricts to own current tickets
+  ---
+  duration_ms: 0.296227
+  type: 'test'
+  ...
+# Subtest: agent cannot request archive scope
+ok 26 - agent cannot request archive scope
+  ---
+  duration_ms: 0.322227
+  type: 'test'
+  ...
+# Subtest: agent can update status only
+ok 27 - agent can update status only
+  ---
+  duration_ms: 0.116586
+  type: 'test'
+  ...
+# Subtest: agent cannot change ticket priority
+ok 28 - agent cannot change ticket priority
+  ---
+  duration_ms: 0.06633
+  type: 'test'
+  ...
+# Subtest: manager can change ticket priority
+ok 29 - manager can change ticket priority
+  ---
+  duration_ms: 0.055374
+  type: 'test'
+  ...
+# Subtest: manager may archive resolved ticket
+ok 30 - manager may archive resolved ticket
+  ---
+  duration_ms: 0.064407
+  type: 'test'
+  ...
+# Subtest: manager cannot archive unresolved ticket
+ok 31 - manager cannot archive unresolved ticket
+  ---
+  duration_ms: 0.048743
+  type: 'test'
+  ...
+# Subtest: agent cannot archive ticket
+ok 32 - agent cannot archive ticket
+  ---
+  duration_ms: 0.050967
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 65.62015

@@ -1,0 +1,24 @@
+SLAWatch v1.2 — build verification attempt (2026-10-25)
+
+$ npm install --no-audit --no-fund --fetch-retries=0 --fetch-timeout=12000
+Result: timed out without npm dependency installation.
+
+$ npm run build
+> vite build
+sh: 1: vite: not found
+Result: BLOCKED (not a React compilation result).
+
+$ npm test
+Result: PASS 32 / 32 domain and permission tests.
+
+$ node --check [server source and smoke test]
+Result: PASS.
+
+$ [TypeScript transpileModule syntax parse for 14 client JS/JSX files]
+Result: PASS 0 diagnostics.
+
+$ [PostCSS parser for client/src/styles.css]
+Result: PASS.
+
+A full Vite build, MongoDB integration and browser QA must be performed on a
+machine that can install npm dependencies and reach a suitable MongoDB replica set.

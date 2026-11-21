@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: slawatch
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health/ready
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: SEED_MANAGER_EMAIL
+        value: manager@example.com
+      - key: SEED_MANAGER_PASSWORD
+        sync: false
+      - key: SEED_MANAGER_NAME
+        value: Demo Manager
+      - key: ALLOW_DEMO_SEED
+        value: yes
+      - key: SEED_DEMO_AGENT_PASSWORD
+        sync: false

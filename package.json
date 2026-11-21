@@ -1,0 +1,24 @@
+{
+  "name": "slawatch-mern",
+  "private": true,
+  "version": "1.5.0",
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c yellow,cyan \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "test": "npm run test -w server",
+    "seed:manager": "npm run seed:manager -w server",
+    "seed:demo": "npm run seed:demo -w server",
+    "smoke:api": "node --env-file=server/.env scripts/smoke-api.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

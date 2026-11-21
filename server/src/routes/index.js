@@ -1,0 +1,28 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { validate, requireAuth, requireManager, protectMutations } from '../middleware/http.js';
+import { login, loginSchema, me, logout, createAgent, createAgentSchema, listAgents } from '../controllers/auth.js';
+import { listTickets, getTicket, postTicket, patchTicket, newTicketSchema, updateTicketSchema, archiveResolvedTicket } from '../controllers/tickets.js';
+import { overview, analytics, exportAnalytics } from '../controllers/metrics.js';
+import { policies, updatePolicy, policySchema, policyHistory } from '../controllers/policies.js';
+
+const routes = Router();
+const loginLimit = rateLimit({ windowMs: 15 * 60000, limit: 12, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many sign-in attempts. Try again later.' } });
+routes.post('/auth/login', loginLimit, protectMutations, validate(loginSchema), login);
+routes.use(requireAuth, protectMutations);
+routes.get('/auth/me', me);
+routes.post('/auth/logout', logout);
+routes.get('/users', requireManager, listAgents);
+routes.post('/users', requireManager, validate(createAgentSchema), createAgent);
+routes.get('/tickets', listTickets);
+routes.post('/tickets', validate(newTicketSchema), postTicket);
+routes.get('/tickets/:id', getTicket);
+routes.patch('/tickets/:id', validate(updateTicketSchema), patchTicket);
+routes.post('/tickets/:id/archive', requireManager, archiveResolvedTicket);
+routes.get('/metrics/overview', overview);
+routes.get('/metrics/analytics', analytics);
+routes.get('/metrics/analytics.csv', exportAnalytics);
+routes.get('/policies', policies);
+routes.get('/policies/history', requireManager, policyHistory);
+routes.patch('/policies/:priority', requireManager, validate(policySchema), updatePolicy);
+export default routes;
