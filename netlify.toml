@@ -4,6 +4,10 @@
   publish = "dist"
   command = "npm run build"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "VITE_API_URL"
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,client/dist/**"
+
 # SPA routing fallback
 [[redirects]]
   from = "/*"
@@ -17,3 +21,4 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+

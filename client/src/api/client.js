@@ -1,12 +1,14 @@
-const BASE = import.meta.env.VITE_API_URL || '/api';
+const RAW_BASE = import.meta.env.VITE_API_URL || '/api';
+const BASE = RAW_BASE.trim().replace(/\/+$/, '');
 let csrfToken = '';
 export function setCsrf(token) { csrfToken = token || ''; }
 
 export async function api(path, options = {}) {
   const method = options.method || 'GET';
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   let response;
   try {
-    response = await fetch(`${BASE}${path}`, {
+    response = await fetch(`${BASE}${cleanPath}`, {
       method, credentials: 'include',
       headers: { 'Content-Type': 'application/json', ...(method !== 'GET' ? { 'X-CSRF-Token': csrfToken } : {}) },
       ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
