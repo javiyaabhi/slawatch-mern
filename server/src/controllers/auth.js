@@ -10,7 +10,7 @@ export const login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email, active: true }).select('+passwordHash');
   const valid = user && await bcrypt.compare(password, user.passwordHash);
   if (!valid) throw new HttpError(401, 'Email or password is incorrect');
-  const csrfToken = await signSession(res, user);
+  const csrfToken = await signSession(res, user, req);
   res.json({ user: user.toJSON(), csrfToken });
 });
 export const me = asyncHandler(async (req, res) => res.json({ user: req.user, csrfToken: csrfForSession(req.sessionId) }));
@@ -22,7 +22,7 @@ export const logout = asyncHandler(async (req, res) => {
     );
   } finally {
     // Clear the browser cookie even if the revocation write fails; the error is still returned.
-    clearSession(res);
+    clearSession(res, req);
   }
   res.json({ message: 'Signed out' });
 });

@@ -38,7 +38,7 @@ export const requireManager = (req, _res, next) => {
   next();
 };
 
-export async function signSession(res, user) {
+export async function signSession(res, user, req) {
   const sessionId = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
   // Persist before issuing the cookie so every accepted JWT has a revocable server record.
@@ -46,14 +46,30 @@ export async function signSession(res, user) {
   const token = jwt.sign({}, process.env.JWT_SECRET, {
     algorithm: 'HS256', subject: String(user._id), jwtid: sessionId, expiresIn: Math.floor(SESSION_DURATION_MS / 1000), issuer: 'slawatch'
   });
+  const origin = req?.get?.('origin') || '';
+  const host = req?.get?.('host') || '';
+  const isCrossDomain = Boolean(
+    (origin && host && !origin.includes(host) && !origin.includes('localhost') && !origin.includes('127.0.0.1')) ||
+    (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.includes('netlify.app'))
+  );
+  const sameSite = isCrossDomain ? 'none' : 'lax';
+  const secure = isCrossDomain || process.env.NODE_ENV === 'production';
   res.cookie('slawatch_session', token, {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
+    httpOnly: true, secure, sameSite,
     path: '/', maxAge: SESSION_DURATION_MS
   });
   return csrfForSession(sessionId);
 }
-export function clearSession(res) {
-  res.clearCookie('slawatch_session', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
+export function clearSession(res, req) {
+  const origin = req?.get?.('origin') || '';
+  const host = req?.get?.('host') || '';
+  const isCrossDomain = Boolean(
+    (origin && host && !origin.includes(host) && !origin.includes('localhost') && !origin.includes('127.0.0.1')) ||
+    (process.env.CLIENT_ORIGIN && process.env.CLIENT_ORIGIN.includes('netlify.app'))
+  );
+  const sameSite = isCrossDomain ? 'none' : 'lax';
+  const secure = isCrossDomain || process.env.NODE_ENV === 'production';
+  res.clearCookie('slawatch_session', { httpOnly: true, secure, sameSite, path: '/' });
 }
 export function csrfForSession(sessionId) {
   return crypto.createHmac('sha256', process.env.JWT_SECRET).update(`csrf:${sessionId}`).digest('hex');
@@ -66,6 +82,7 @@ export function isOriginAllowed(req, origin) {
     .map(o => o.trim().replace(/\/+$/, ''))
     .filter(Boolean);
   if (envOrigins.includes(cleanOrigin)) return true;
+  if (cleanOrigin.endsWith('.netlify.app')) return true;
 
   if (process.env.RENDER_EXTERNAL_URL) {
     const renderOrigin = process.env.RENDER_EXTERNAL_URL.trim().replace(/\/+$/, '');
@@ -95,8 +112,10 @@ export function isOriginAllowed(req, origin) {
 }
 
 export function protectMutations(req, _res, next) {
-  if (req.get('sec-fetch-site') === 'cross-site') return next(new HttpError(403, 'Cross-site requests are not allowed'));
   const origin = req.get('origin');
+  if (req.get('sec-fetch-site') === 'cross-site' && (!origin || !isOriginAllowed(req, origin))) {
+    return next(new HttpError(403, 'Cross-site requests are not allowed'));
+  }
   if (origin && !isOriginAllowed(req, origin)) return next(new HttpError(403, 'Untrusted origin'));
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
   // Login is unauthenticated; its origin is still verified above.

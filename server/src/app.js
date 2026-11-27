@@ -39,6 +39,7 @@ app.use(cors({
     ];
     if (
       envOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith('.netlify.app') ||
       (renderOrigin && cleanOrigin === renderOrigin) ||
       (process.env.NODE_ENV !== 'production' && devOrigins.includes(cleanOrigin)) ||
       process.env.NODE_ENV === 'production'
