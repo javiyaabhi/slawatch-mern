@@ -27,6 +27,7 @@ export const overview = asyncHandler(async (req, res) => {
         _id: null, total: { $sum: 1 },
         active: { $sum: { $cond: [{ $ne: ['$status', 'resolved'] }, 1, 0] } },
         resolved: { $sum: { $cond: [{ $eq: ['$status', 'resolved'] }, 1, 0] } },
+        pendingApproval: { $sum: { $cond: [{ $eq: ['$approvalStatus', 'pending'] }, 1, 0] } },
         breached: { $sum: { $cond: [{ $and: [{ $ne: ['$status', 'resolved'] }, { $lt: ['$slaDueAt', now] }] }, 1, 0] } },
         atRisk: { $sum: { $cond: [{ $and: [
           { $ne: ['$status', 'resolved'] }, { $gte: ['$slaDueAt', now] },
@@ -40,9 +41,9 @@ export const overview = asyncHandler(async (req, res) => {
       .populate('assignedTo', 'name').sort({ slaDueAt: 1 }).limit(6).lean(),
     monthlyAggregation(scope, cohortStart(6, now), now)
   ]);
-  const counts = row || { total: 0, active: 0, resolved: 0, breached: 0, atRisk: 0, resolvedWithinSla: 0, avgResolutionMs: null };
+  const counts = row || { total: 0, active: 0, resolved: 0, pendingApproval: 0, breached: 0, atRisk: 0, resolvedWithinSla: 0, avgResolutionMs: null };
   res.json({ counts: {
-    total: counts.total, active: counts.active, resolved: counts.resolved, breached: counts.breached,
+    total: counts.total, active: counts.active, resolved: counts.resolved, pendingApproval: counts.pendingApproval || 0, breached: counts.breached,
     atRisk: counts.atRisk, onTimeResolutionRate: counts.resolved ? Math.round(1000 * counts.resolvedWithinSla / counts.resolved) / 10 : null,
     avgResolutionHours: counts.avgResolutionMs == null ? null : Math.round(counts.avgResolutionMs / 360000) / 10
   }, attention, monthly: fillMonthlyCohorts(monthlyRows, 6, now) });

@@ -797,6 +797,64 @@ p {
 .status-at_risk { background: #fdf3e5; color: #a06e2e; }
 .status-breached { background: #fcedea; color: #b84c3c; }
 .status-archived { background: #edeef0; color: #667278; }
+.status-pending { background: #fff6e8; color: #b06518; border: 1px solid #fedfae; font-weight: 600; }
+.status-approved { background: #e7f5ed; color: #2e7a5d; font-weight: 600; }
+.status-rejected { background: #fdf0ee; color: #b84c3c; border: 1px solid #f9cac2; font-weight: 600; }
+
+.approval-banner {
+  background: #fffdf5;
+  border: 1px solid #f6deb0;
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approval-banner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.approval-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+  color: #7d4d0e;
+  font-size: 0.95rem;
+}
+
+.approval-banner p {
+  color: #8a5814;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.approval-banner-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.rejected-banner {
+  background: #fff4f2;
+  border: 1px solid #f7ceca;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  color: #a83827;
+  font-size: 0.86rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
 
 .priority {
   display: inline-flex;

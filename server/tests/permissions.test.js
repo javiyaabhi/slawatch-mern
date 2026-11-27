@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mayReadTicket, mayEditTicketFields, mayArchiveTicket, mayViewArchive, ticketScope } from '../src/domain/permissions.js';
+import { mayReadTicket, mayEditTicketFields, mayArchiveTicket, mayViewArchive, mayApproveTicket, ticketScope } from '../src/domain/permissions.js';
 const agent = { _id: 'user-1', role: 'agent' };
 const manager = { _id: 'user-9', role: 'manager' };
 const ticket = { assignedTo:'user-1', status:'open', archivedAt:null };
@@ -22,3 +22,13 @@ test('manager can change ticket priority', () => assert.equal(mayEditTicketField
 test('manager may archive resolved ticket', () => assert.equal(mayArchiveTicket({...ticket,status:'resolved'},manager),true));
 test('manager cannot archive unresolved ticket', () => assert.equal(mayArchiveTicket(ticket,manager),false));
 test('agent cannot archive ticket', () => assert.equal(mayArchiveTicket({...ticket,status:'resolved'},agent),false));
+test('agent cannot approve or reject ticket', () => {
+  assert.equal(mayApproveTicket(agent), false);
+  assert.equal(mayEditTicketFields(agent, { approvalStatus: 'approved' }), false);
+  assert.equal(mayEditTicketFields(agent, { approvalStatus: 'rejected' }), false);
+});
+test('manager can approve or reject ticket', () => {
+  assert.equal(mayApproveTicket(manager), true);
+  assert.equal(mayEditTicketFields(manager, { approvalStatus: 'approved' }), true);
+  assert.equal(mayEditTicketFields(manager, { approvalStatus: 'rejected' }), true);
+});

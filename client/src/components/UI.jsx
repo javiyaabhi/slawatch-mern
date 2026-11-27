@@ -4,7 +4,7 @@ export function PageHeading({ eyebrow, title, description, action }) {
   return <div className="page-heading"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1>{description && <p>{description}</p>}</div>{action && <div className="heading-action">{action}</div>}</div>;
 }
 export function StatusBadge({ status }) {
-  const name = ({ open: 'Open', in_progress: 'In progress', resolved: 'Resolved', archived: 'Archived', breached: 'Breached', at_risk: 'At risk', on_track: 'On track', met: 'Met SLA' })[status] || status;
+  const name = ({ open: 'Open', in_progress: 'In progress', resolved: 'Resolved', archived: 'Archived', breached: 'Breached', at_risk: 'At risk', on_track: 'On track', met: 'Met SLA', pending: 'Pending approval', approved: 'Approved', rejected: 'Rejected' })[status] || status;
   return <span className={`status status-${status}`}>{name}</span>;
 }
 export function Priority({ level }) { return <span className={`priority priority-${level}`}><i />{level[0].toUpperCase() + level.slice(1)}</span>; }

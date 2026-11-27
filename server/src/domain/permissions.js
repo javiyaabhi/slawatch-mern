@@ -21,3 +21,6 @@ export function mayEditTicketFields(user, input) {
 export function mayArchiveTicket(ticket, user) {
   return user.role === 'manager' && ticket?.status === 'resolved' && !ticket.archivedAt;
 }
+export function mayApproveTicket(user) {
+  return user?.role === 'manager';
+}

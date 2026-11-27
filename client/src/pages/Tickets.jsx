@@ -13,11 +13,20 @@ export default function Tickets() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const archived = user?.role === 'manager' && searchParams.get('archived') === '1';
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState(() => ({
+    status: '', priority: '', category: '', approval: searchParams.get('approval') || '', q: ''
+  }));
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const urlApproval = searchParams.get('approval');
+    if (urlApproval && filters.approval !== urlApproval) {
+      setFilters(f => ({ ...f, approval: urlApproval }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -76,6 +85,14 @@ export default function Tickets() {
             <option value="">All categories</option>{categories.map(x => <option key={x} value={x}>{x}</option>)}
           </select>
         </label>
+        <label>Approval
+          <select value={filters.approval} onChange={e => updateFilter('approval', e.target.value)}>
+            <option value="">All approvals</option>
+            <option value="pending">Pending approval</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </label>
         <button type="button" className="filter-reset" onClick={clearFilters}>Clear filters</button>
       </div>
     </div>
@@ -87,7 +104,13 @@ export default function Tickets() {
           <tbody>{data.tickets.map(t => <tr key={t._id}>
             <td><Link className="table-title" to={`/tickets/${t._id}`}>{t.title}</Link><div className="ticket-code">{t.code}</div></td>
             <td><Priority level={t.priority}/></td>
-            <td><StatusBadge status={archived ? 'archived' : t.status}/></td>
+            <td>
+              <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                <StatusBadge status={archived ? 'archived' : t.status}/>
+                {t.approvalStatus === 'pending' && <StatusBadge status="pending"/>}
+                {t.approvalStatus === 'rejected' && <StatusBadge status="rejected"/>}
+              </div>
+            </td>
             <td><StatusBadge status={slaState(t)}/></td>
             <td>{t.assignedTo?.name || '—'}</td>
             <td className="muted-cell">{shortDate(archived ? t.archivedAt : t.createdAt)}</td>
